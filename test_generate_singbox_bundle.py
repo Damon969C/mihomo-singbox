@@ -92,7 +92,7 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
         self.assertEqual(config["dns"]["final"], sb.LOCAL_DNS_PRIMARY_TAG)
         self.assertEqual(config["dns"]["strategy"], "prefer_ipv4")
         self.assertEqual(config["dns"]["cache_capacity"], 4096)
-        self.assertEqual(config["dns"]["timeout"], "2s")
+        self.assertNotIn("timeout", config["dns"])
         self.assertEqual(config["dns"]["servers"][1]["server"], "180.76.76.76")
         self.assertEqual(config["dns"]["servers"][2]["server"], "223.5.5.5")
         self.assertNotIn("detour", config["dns"]["servers"][1])
@@ -107,7 +107,7 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
         self.assertEqual(config["dns"], sb.build_global_dns_config())
         self.assertEqual(config["dns"]["strategy"], "prefer_ipv4")
         self.assertEqual(config["dns"]["cache_capacity"], 4096)
-        self.assertEqual(config["dns"]["timeout"], "2s")
+        self.assertNotIn("timeout", config["dns"])
         self.assertEqual(config["dns"]["servers"][1]["server"], "10.0.0.1")
         self.assertEqual(config["dns"]["servers"][1]["detour"], "lan-select")
         self.assertEqual(config["route"]["rules"], sb.GLOBAL_ROUTE_RULES)
@@ -152,7 +152,7 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
         self.assertEqual(dns_servers[1]["server_port"], sb.MIHOMO_DNS_PORT)
         self.assertEqual(dns_servers[1]["detour"], "lan-select")
         self.assertEqual(config["dns"]["cache_capacity"], 4096)
-        self.assertEqual(config["dns"]["timeout"], "2s")
+        self.assertNotIn("timeout", config["dns"])
 
     def test_write_bundle_creates_server_client_and_secret_summary(self):
         with tempfile.TemporaryDirectory() as temp_dir:

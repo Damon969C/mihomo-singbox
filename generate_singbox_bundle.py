@@ -353,7 +353,6 @@ def build_global_dns_config() -> dict:
         "strategy": "prefer_ipv4",
         "reverse_mapping": True,
         "cache_capacity": 4096,
-        "timeout": "2s",
     }
 
 
@@ -383,7 +382,6 @@ def build_lan_dns_config() -> dict:
         "strategy": "prefer_ipv4",
         "reverse_mapping": True,
         "cache_capacity": 4096,
-        "timeout": "2s",
     }
 
 
@@ -408,7 +406,6 @@ def build_mihomo_dns_config() -> dict:
         "strategy": "prefer_ipv4",
         "reverse_mapping": True,
         "cache_capacity": 4096,
-        "timeout": "2s",
     }
 
 
