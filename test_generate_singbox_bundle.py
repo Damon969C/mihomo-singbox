@@ -62,9 +62,11 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
         tun = config["inbounds"][0]
         self.assertEqual(tun["type"], "tun")
         self.assertEqual(tun["route_address"], sb.LAN_CIDRS)
+        self.assertEqual(tun["mtu"], 1280)
         self.assertEqual(config["dns"], sb.build_lan_dns_config())
         self.assertEqual(config["route"]["rules"], sb.LAN_ROUTE_RULES)
         self.assertEqual(config["route"]["default_domain_resolver"], sb.BOOTSTRAP_DOMAIN_RESOLVER)
+        self.assertEqual(config["route"]["default_domain_resolver"]["strategy"], "prefer_ipv4")
         self.assertTrue(tun["auto_route"])
         self.assertTrue(tun["auto_redirect"])
         self.assertNotIn("sniff", tun)
@@ -108,6 +110,7 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
         self.assertEqual(config["dns"]["strategy"], "prefer_ipv4")
         self.assertEqual(config["dns"]["cache_capacity"], 4096)
         self.assertNotIn("timeout", config["dns"])
+        self.assertEqual(config["dns"]["servers"][1]["type"], "tcp")
         self.assertEqual(config["dns"]["servers"][1]["server"], "10.0.0.1")
         self.assertEqual(config["dns"]["servers"][1]["detour"], "lan-select")
         self.assertEqual(config["route"]["rules"], sb.GLOBAL_ROUTE_RULES)
@@ -148,6 +151,7 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
 
         dns_servers = config["dns"]["servers"]
         self.assertEqual(dns_servers[1]["tag"], sb.MIHOMO_DNS_TAG)
+        self.assertEqual(dns_servers[1]["type"], "tcp")
         self.assertEqual(dns_servers[1]["server"], sb.MIHOMO_SERVER)
         self.assertEqual(dns_servers[1]["server_port"], sb.MIHOMO_DNS_PORT)
         self.assertEqual(dns_servers[1]["detour"], "lan-select")

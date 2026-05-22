@@ -22,8 +22,9 @@ BOOTSTRAP_DNS_TAG = "bootstrap-dns"
 BOOTSTRAP_DNS_SERVER = "223.5.5.5"
 BOOTSTRAP_DOMAIN_RESOLVER = {
     "server": BOOTSTRAP_DNS_TAG,
-    "strategy": "prefer_ipv6",
+    "strategy": "prefer_ipv4",
 }
+TUN_MTU = 1280
 REMOTE_DNS_TAG = "remote-dns"
 LAN_DNS_SERVER = "10.0.0.1"
 REMOTE_DNS_SERVER = LAN_DNS_SERVER
@@ -247,7 +248,7 @@ def build_tun_inbound(route_address: list[str]) -> dict:
             "172.19.0.1/30",
             "fdfe:dcba:9876::1/126",
         ],
-        "mtu": 9000,
+        "mtu": TUN_MTU,
         "auto_route": True,
         "strict_route": True,
         "auto_redirect": True,
@@ -342,7 +343,7 @@ def build_global_dns_config() -> dict:
                 "server_port": 53,
             },
             {
-                "type": "udp",
+                "type": "tcp",
                 "tag": REMOTE_DNS_TAG,
                 "server": REMOTE_DNS_SERVER,
                 "server_port": 53,
@@ -395,7 +396,7 @@ def build_mihomo_dns_config() -> dict:
                 "server_port": 53,
             },
             {
-                "type": "udp",
+                "type": "tcp",
                 "tag": MIHOMO_DNS_TAG,
                 "server": MIHOMO_SERVER,
                 "server_port": MIHOMO_DNS_PORT,
