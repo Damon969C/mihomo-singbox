@@ -1,0 +1,18 @@
+__pycache__/
+*.py[cod]
+
+# Local/generated mihomo, Xray, Hysteria2, and sing-box configs may contain secrets.
+*.json
+*.yaml
+*.yml
+*.pem
+sing-box-secrets.txt
+singbox-output/
+
+# Keep source and tests tracked explicitly.
+!README.md
+!.gitignore
+!*.py
+
+# Local old bundle with embedded/generated data.
+old-restore_bundle.py
