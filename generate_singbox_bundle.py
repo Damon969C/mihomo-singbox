@@ -27,6 +27,10 @@ BOOTSTRAP_DOMAIN_RESOLVER = {
 REMOTE_DNS_TAG = "remote-dns"
 LAN_DNS_SERVER = "10.0.0.1"
 REMOTE_DNS_SERVER = LAN_DNS_SERVER
+LOCAL_DNS_PRIMARY_TAG = "local-dns-1"
+LOCAL_DNS_SECONDARY_TAG = "local-dns-2"
+LOCAL_DNS_PRIMARY_SERVER = "180.76.76.76"
+LOCAL_DNS_SECONDARY_SERVER = "223.5.5.5"
 MIHOMO_DNS_TAG = "mihomo-dns"
 MIHOMO_DNS_PORT = 53
 MIHOMO_SERVER = "10.0.0.20"
@@ -348,11 +352,39 @@ def build_global_dns_config() -> dict:
         "final": REMOTE_DNS_TAG,
         "strategy": "prefer_ipv4",
         "reverse_mapping": True,
+        "cache_capacity": 4096,
+        "timeout": "2s",
     }
 
 
 def build_lan_dns_config() -> dict:
-    return build_global_dns_config()
+    return {
+        "servers": [
+            {
+                "type": "udp",
+                "tag": BOOTSTRAP_DNS_TAG,
+                "server": BOOTSTRAP_DNS_SERVER,
+                "server_port": 53,
+            },
+            {
+                "type": "udp",
+                "tag": LOCAL_DNS_PRIMARY_TAG,
+                "server": LOCAL_DNS_PRIMARY_SERVER,
+                "server_port": 53,
+            },
+            {
+                "type": "udp",
+                "tag": LOCAL_DNS_SECONDARY_TAG,
+                "server": LOCAL_DNS_SECONDARY_SERVER,
+                "server_port": 53,
+            },
+        ],
+        "final": LOCAL_DNS_PRIMARY_TAG,
+        "strategy": "prefer_ipv4",
+        "reverse_mapping": True,
+        "cache_capacity": 4096,
+        "timeout": "2s",
+    }
 
 
 def build_mihomo_dns_config() -> dict:
@@ -375,6 +407,8 @@ def build_mihomo_dns_config() -> dict:
         "final": MIHOMO_DNS_TAG,
         "strategy": "prefer_ipv4",
         "reverse_mapping": True,
+        "cache_capacity": 4096,
+        "timeout": "2s",
     }
 
 

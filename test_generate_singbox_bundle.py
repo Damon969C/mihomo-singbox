@@ -89,10 +89,14 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
         self.assertEqual(hy2["password"], "hy2-password")
         self.assertTrue(hy2["tls"]["insecure"])
 
-        self.assertEqual(config["dns"]["final"], sb.REMOTE_DNS_TAG)
+        self.assertEqual(config["dns"]["final"], sb.LOCAL_DNS_PRIMARY_TAG)
         self.assertEqual(config["dns"]["strategy"], "prefer_ipv4")
-        self.assertEqual(config["dns"]["servers"][1]["server"], sb.LAN_DNS_SERVER)
-        self.assertEqual(config["dns"]["servers"][1]["detour"], "lan-select")
+        self.assertEqual(config["dns"]["cache_capacity"], 4096)
+        self.assertEqual(config["dns"]["timeout"], "2s")
+        self.assertEqual(config["dns"]["servers"][1]["server"], "180.76.76.76")
+        self.assertEqual(config["dns"]["servers"][2]["server"], "223.5.5.5")
+        self.assertNotIn("detour", config["dns"]["servers"][1])
+        self.assertNotIn("detour", config["dns"]["servers"][2])
         self.assertEqual(config["route"]["final"], "direct")
 
     def test_global_vless_client_routes_all_traffic_to_vless_selector(self):
@@ -102,6 +106,10 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
         self.assertEqual(tun["route_address"], sb.GLOBAL_ROUTE_CIDRS)
         self.assertEqual(config["dns"], sb.build_global_dns_config())
         self.assertEqual(config["dns"]["strategy"], "prefer_ipv4")
+        self.assertEqual(config["dns"]["cache_capacity"], 4096)
+        self.assertEqual(config["dns"]["timeout"], "2s")
+        self.assertEqual(config["dns"]["servers"][1]["server"], "10.0.0.1")
+        self.assertEqual(config["dns"]["servers"][1]["detour"], "lan-select")
         self.assertEqual(config["route"]["rules"], sb.GLOBAL_ROUTE_RULES)
         self.assertEqual(config["route"]["default_domain_resolver"], sb.BOOTSTRAP_DOMAIN_RESOLVER)
         self.assertEqual(config["route"]["final"], "lan-select")
@@ -143,6 +151,8 @@ class GenerateSingBoxBundleTests(unittest.TestCase):
         self.assertEqual(dns_servers[1]["server"], sb.MIHOMO_SERVER)
         self.assertEqual(dns_servers[1]["server_port"], sb.MIHOMO_DNS_PORT)
         self.assertEqual(dns_servers[1]["detour"], "lan-select")
+        self.assertEqual(config["dns"]["cache_capacity"], 4096)
+        self.assertEqual(config["dns"]["timeout"], "2s")
 
     def test_write_bundle_creates_server_client_and_secret_summary(self):
         with tempfile.TemporaryDirectory() as temp_dir:
