@@ -1,26 +1,26 @@
 # mihomo-singbox
 
-Utilities for building mihomo, Xray/Hysteria2, and sing-box tunnel configs.
+用于生成和维护 mihomo、Xray/Hysteria2、sing-box 相关配置的脚本集合。
 
-This repository intentionally keeps generated configs and real node credentials out of version control. Run the scripts locally on the target VPS or workstation and review generated files before deployment.
+仓库只保存脚本和测试，不保存真实节点、订阅、密钥、证书和生成后的配置文件。运行脚本后请先检查生成内容，再部署到服务器或客户端。
 
-## Scripts
+## 脚本说明
 
 ### `restore_bundle.py`
 
-VPS recovery/config generation helper for:
+VPS 恢复和配置生成脚本，主要功能：
 
-- Xray VLESS REALITY + Vision server config
-- Hysteria2 server config
-- mihomo client proxy files:
+- 生成 Xray VLESS REALITY + Vision 服务端配置
+- 生成 Hysteria2 服务端配置
+- 生成 mihomo 客户端节点配置：
   - `/root/vless.yaml`
   - `/root/hy2.yaml`
   - `/root/clash-proxies.yaml`
-- sysctl network tuning
-- Realm forwarding helper
-- occupied port display
+- 写入 sysctl 网络调优配置
+- 安装并配置 Realm 转发
+- 查看当前监听端口占用
 
-Run:
+运行：
 
 ```bash
 python3 restore_bundle.py
@@ -28,29 +28,29 @@ python3 restore_bundle.py
 
 ### `generate_singbox_bundle.py`
 
-Generates sing-box server and mobile client configs for remote LAN access.
+生成 sing-box 服务端和手机客户端配置，用于异地组网和隧道加密。
 
-Server:
+服务端包含：
 
 - VLESS REALITY + `xtls-rprx-vision`
-- Hysteria2 + salamander obfs
+- Hysteria2 + salamander 混淆
 
-Client files:
+客户端会生成 6 份配置：
 
-- `vless-10.json`: only routes `10.0.0.0/24` and `10.10.10.0/24`, default tunnel is VLESS
-- `hy2-10.json`: only routes `10.0.0.0/24` and `10.10.10.0/24`, default tunnel is Hysteria2
-- `vless-lan.json`: all traffic exits from the sing-box server LAN, default tunnel is VLESS
-- `hy2-lan.json`: all traffic exits from the sing-box server LAN, default tunnel is Hysteria2
-- `vless-mihomo.json`: all traffic goes through the tunnel and then to mihomo at `10.0.0.20:7890`, default tunnel is VLESS
-- `hy2-mihomo.json`: all traffic goes through the tunnel and then to mihomo at `10.0.0.20:7890`, default tunnel is Hysteria2
+- `vless-10.json`：只访问 `10.0.0.0/24`、`10.10.10.0/24`，默认使用 VLESS
+- `hy2-10.json`：只访问 `10.0.0.0/24`、`10.10.10.0/24`，默认使用 Hysteria2
+- `vless-lan.json`：所有流量走 sing-box 服务端直出，默认使用 VLESS
+- `hy2-lan.json`：所有流量走 sing-box 服务端直出，默认使用 Hysteria2
+- `vless-mihomo.json`：所有流量经隧道后交给 `10.0.0.20:7890` 的 mihomo，默认使用 VLESS
+- `hy2-mihomo.json`：所有流量经隧道后交给 `10.0.0.20:7890` 的 mihomo，默认使用 Hysteria2
 
-Run interactively:
+交互运行：
 
 ```bash
 python3 generate_singbox_bundle.py
 ```
 
-Run non-interactively:
+非交互运行：
 
 ```bash
 python3 generate_singbox_bundle.py \
@@ -60,28 +60,51 @@ python3 generate_singbox_bundle.py \
   -o ./singbox-output
 ```
 
-The script requires `sing-box` to generate REALITY keys. If certificate generation is enabled, it also requires `openssl`.
+依赖：
+
+- `sing-box`：用于生成 REALITY 密钥
+- `openssl`：用于生成 Hysteria2 自签证书
 
 ### `sync_clash_proxy_groups.py`
 
-Synchronizes mihomo/Clash `proxy-groups` node lists from the top-level `proxies` section while preserving block-style YAML formatting.
+根据 mihomo/Clash 配置中顶层 `proxies` 节点列表，同步 `proxy-groups` 里的节点名称，并尽量保持块状 YAML 格式不被破坏。
 
-Run:
+运行：
 
 ```bash
 python3 sync_clash_proxy_groups.py basic.yaml -o basic.synced.yaml
 ```
 
-## Tests
+## 测试
+
+运行单元测试：
 
 ```bash
 python3 -m unittest test_restore_bundle.py test_sync_clash_proxy_groups.py test_generate_singbox_bundle.py
+```
+
+语法检查：
+
+```bash
 python3 -m py_compile restore_bundle.py sync_clash_proxy_groups.py generate_singbox_bundle.py
 ```
 
-If `sing-box` is installed, generated sing-box configs can be checked with:
+如果本机安装了 `sing-box`，可以检查生成后的配置：
 
 ```bash
 sing-box check -c sing-box-server.json
 sing-box check -c vless-10.json
+sing-box check -c vless-mihomo.json
 ```
+
+## 安全说明
+
+`.gitignore` 默认排除了：
+
+- `*.yaml`
+- `*.json`
+- `*.pem`
+- `sing-box-secrets.txt`
+- 生成目录和 Python 缓存
+
+这些文件通常包含订阅节点、UUID、Reality 密钥、HY2 密码、证书等敏感信息，不应直接提交到公开仓库。
