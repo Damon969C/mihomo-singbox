@@ -6,6 +6,8 @@
 
 ## 脚本说明
 
+详细交接信息、常用验证命令、已知兼容性约束和后续调整建议见 [`HANDOFF.md`](HANDOFF.md)。
+
 ### `restore_bundle.py`
 
 VPS 恢复和配置生成脚本，主要功能：
